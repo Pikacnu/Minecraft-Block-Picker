@@ -1,0 +1,15 @@
+#result {
+	display: flex;
+	position: fixed;
+	background-color: #f9f9f9;
+	color: black;
+	width: auto;
+	border: 1px solid #ccc;
+	z-index: 9999999999999999999999999;
+	overflow-y: auto;
+	max-height: 300px;
+}
+
+.block {
+	width: 50px;
+}
