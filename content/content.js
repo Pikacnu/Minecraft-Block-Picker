@@ -378,69 +378,67 @@ let prev = {
 	g: 255,
 	b: 255,
 };
+
+function time() {
+	let time = new Date().getTime();
+	return () => {
+		if (new Date().getTime() - time > 1_000) {
+			time = new Date().getTime();
+			return true;
+		}
+		return false;
+	};
+}
+
+function hextoRGB(hex) {
+	return {
+		r: parseInt(hex.substring(1, 3), 16),
+		g: parseInt(hex.substring(3, 5), 16),
+		b: parseInt(hex.substring(5, 7), 16),
+	};
+}
+
 document.addEventListener('mousemove', async (e) => {
 	const { clientX, clientY } = e;
 	const result = document.getElementById('result');
 	result.style.top = `${clientY + 10}px`;
 	result.style.left = `${clientX + 10}px`;
-	try {
-		let element = document.elementFromPoint(clientX, clientY);
-		let rgb;
-		if (!element)console.log('no element')
-		if (['img', 'canvas', 'svg'].includes(element.tagName.toLowerCase())) {
-			const canvas = document.createElement('canvas');
-			const ctx = canvas.getContext('2d');
-			canvas.width = 1;
-			canvas.height = 1;
-			//get cusor position at the image
-			const rect = element.getBoundingClientRect();
-			const x = clientX - rect.left;
-			const y = clientY - rect.top;
-			ctx.drawImage(element, x, y, 1, 1, 0, 0, 1, 1);
-			const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
-			rgb = `rgb(${r}, ${g}, ${b})`;
-			canvas.remove();
-		}
-		if (
-			['div', 'section', 'header', 'footer', 'main', 'nav'].includes(
-				element.tagName.toLowerCase(),
-			)
-		) {
-			rgb = window.getComputedStyle(element).backgroundColor;
-		}
-		if (
-			['p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code', 'a'].includes(
-				element.tagName.toLowerCase(),
-			)
-		) {
-			rgb = window.getComputedStyle(element).color;
-		}
-		rgb = rgb.replace(/[^\d,]/g, '').split(',');
-		rgb = {
-			r: parseInt(rgb[0]),
-			g: parseInt(rgb[1]),
-			b: parseInt(rgb[2]),
-		};
-		if (rgb.r === NaN || rgb.g === NaN || rgb.b === NaN) return;
-		if (prev && prev.r === rgb.r && prev.g === rgb.g && prev.b === rgb.b)
-			return;
-		prev = rgb;
-		result.innerHTML = '';
-		const distance = blocks.map((block) => {
-			const distance = Math.sqrt(
-				Math.pow(block.r - rgb.r, 2) +
-					Math.pow(block.g - rgb.g, 2) +
-					Math.pow(block.b - rgb.b, 2),
-			);
-			return { ...block, distance };
-		});
-		distance.sort((a, b) => a.distance - b.distance);
-		distance.slice(0, 5).forEach(async (block) => {
-			const img = document.createElement('img');
-			img.classList = 'block';
-			img.src = chrome.runtime.getURL(`/assest/blocks/${block.id}`);
-			img.alt = block.id.replace('.png', '');
-			result.appendChild(img);
-		});
-	} catch (e) {}
 });
+
+document.addEventListener('click', () => {
+	if (!time()) {
+		return;
+	}
+	handleDoubleClick();
+});
+
+function handleDoubleClick() {
+	let eyedropper = new EyeDropper();
+	eyedropper.open().then((color) => {
+		let hex = color.sRGBHex;
+		let rgb = hextoRGB(hex);
+		try {
+			if (rgb.r === NaN || rgb.g === NaN || rgb.b === NaN) return;
+			if (prev && prev.r === rgb.r && prev.g === rgb.g && prev.b === rgb.b)
+				return;
+			prev = rgb;
+			result.innerHTML = '';
+			const distance = blocks.map((block) => {
+				const distance = Math.sqrt(
+					Math.pow(block.r - rgb.r, 2) +
+						Math.pow(block.g - rgb.g, 2) +
+						Math.pow(block.b - rgb.b, 2),
+				);
+				return { ...block, distance };
+			});
+			distance.sort((a, b) => a.distance - b.distance);
+			distance.slice(0, 5).forEach(async (block) => {
+				const img = document.createElement('img');
+				img.classList = 'block';
+				img.src = chrome.runtime.getURL(`/assest/blocks/${block.id}`);
+				img.alt = block.id.replace('.png', '');
+				result.appendChild(img);
+			});
+		} catch (e) {}
+	});
+}
