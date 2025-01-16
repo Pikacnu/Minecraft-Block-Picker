@@ -14,35 +14,74 @@
     font-size: large;
     background-color: beige;
   }
+  
   #container {
     margin: 1rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 120px;
+    width: 300px; /* 增加寬度以適應新的結構 */
   }
-
+  
+  .row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
   #result {
     display: flex;
-    height: 300px;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
+    width: 100%;
+    align-items: center;
   }
-
+  
+  .block-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 5px;
+    width: 100%;
+    justify-content: space-between; /* 保證圖片與文字之間的間隔 */
+  }
+  
   img {
     width: 50px;
+    margin-right: 10px; /* 確保圖片和文字有間距 */
+  }
+  
+  #inputContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  #pickedList {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+  }
+  
+  #hexValue {
+    font-weight: bold;
   }
 </style>
 
 <body>
   <div id="container">
-    <input type="color" id="input">
-    <div id="result">
-      hiaa
+    <!-- 第一行：input 和 hex -->
+    <div id="inputContainer" class="row">
+      <input type="color" id="input">
+      <div id="hexValue"></div>
     </div>
+    <!-- 第二行：result 和 img.alt -->
+    <div id="result"></div>
+    <div id="pickedList"></div>
   </div>
+
   <script type="module" src="popup.js"></script>
 </body>
 
