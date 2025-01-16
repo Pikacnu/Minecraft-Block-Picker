@@ -30,11 +30,15 @@ document.addEventListener('mousemove', async (e) => {
 	result.style.left = `${clientX + 10}px`;
 });
 
-document.addEventListener('dblclick', () => {
-	handleDoubleClick();
+// 訊息監聽器，接收來自背景頁面的訊息
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.action === "pickColor") {
+    // 當收到 "pickColor" 訊息時，執行 handlePickColor
+    handlePickColor();
+  }
 });
 
-function handleDoubleClick() {
+function handlePickColor() {
 	let eyedropper = new EyeDropper();
 	eyedropper.open().then((color) => {
 		let hex = color.sRGBHex;
@@ -61,6 +65,7 @@ function handleDoubleClick() {
 				img.alt = block.id.replace('.png', '');
 				result.appendChild(img);
 			});
+			chrome.storage.local.set({ hex});
 		} catch (e) {}
 	});
 }
