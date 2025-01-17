@@ -81,6 +81,11 @@
     width: 100%;
   }
 
+  /* 讓滑鼠懸停在 RGB 滑桿上時顯示 col-resize 游標 */
+  #xSlider, #ySlider, #zSlider {
+    cursor: col-resize;
+  }
+
   label {
     margin-top: 10px;
   }
@@ -94,6 +99,7 @@
     border-radius: 5px;
     background-color: #f0f0f0;
     transition: background-color 0.3s ease;
+    cursor: pointer;
   }
 
   #colorModeButtons button.active {
